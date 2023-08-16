@@ -32,7 +32,7 @@ func (c *IntervalCalculator) Calculate(events ...calendar.Event) []Interval {
 		End:   events[0].End,
 	}
 	for _, ni := range events[1:] {
-		
+
 	}
 }
 

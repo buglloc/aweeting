@@ -15,14 +15,16 @@ type Scheduler struct {
 	ctx          context.Context
 	cancelCtx    context.CancelFunc
 	done         chan struct{}
+	activeEvent  calendar.Event
 	gap          time.Duration
-	jitter       time.Duration
 	updInterval  time.Duration
 	previewLimit time.Duration
 }
 
 func NewScheduler(cal calendar.Calendar) *Scheduler {
-	sched := quartz.NewStdSchedulerWithOptions(quartz.StdSchedulerOptions{})
+	sched := quartz.NewStdSchedulerWithOptions(quartz.StdSchedulerOptions{
+		BlockingExecution: true,
+	})
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &Scheduler{
@@ -41,16 +43,21 @@ func NewScheduler(cal calendar.Calendar) *Scheduler {
 func (s *Scheduler) Start() error {
 	defer close(s.done)
 
-	s.sched.Start(s.ctx)
-	for {
-		toNextTick := time.Until(
+	updateTick := func() time.Duration {
+		return time.Until(
 			time.Now().Add(s.updInterval).Truncate(s.updInterval),
 		)
+	}
 
+	s.sched.Start(s.ctx)
+	toUpdateTick := updateTick()
+
+	for {
 		select {
 		case <-s.ctx.Done():
 			return nil
-		case <-time.After(toNextTick):
+		case <-time.After(toUpdateTick):
+			toUpdateTick = updateTick()
 			if err := s.updateJobs(); err != nil {
 
 			}
@@ -75,4 +82,20 @@ func (s *Scheduler) updateJobs() error {
 	}
 	log.Info().Int("count", len(events)).Msg("got calendar events")
 
+	activeIDs := make(map[int]struct{})
+	for _, id := range s.sched.GetJobKeys() {
+		activeIDs[id] = struct{}{}
+	}
+
+	for _, e := range events {
+		if _, ok := activeIDs[e.ID]; ok {
+			continue
+		}
+
+		s.sched.ScheduleJob(s.ctx)
+	}
+	s.sched.GetJobKeys()
+	time.AfterFunc()
+	ss := time.NewTimer()
+	ss.Reset()
 }
