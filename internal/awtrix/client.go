@@ -5,20 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/buglloc/aweeting/internal/ticker"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/rs/zerolog/log"
 	"math"
 	"time"
+
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/rs/zerolog/log"
+
+	"github.com/buglloc/aweeting/internal/ticker"
 )
 
-type ColorSet struct {
-	Zero     []int
-	Upcoming []int
-	OnAir    []int
-}
-
-type IconSet struct {
+type Set struct {
 	Zero     string
 	Upcoming string
 	OnAir    string
@@ -29,15 +25,15 @@ type MqttConfig struct {
 	Username string
 	Password string
 	Topic    string
-	Icons    IconSet
-	Colors   ColorSet
+	Icons    Set
+	Colors   Set
 }
 
 type MqttUpdater struct {
 	mqtt   mqtt.Client
 	topic  string
-	icons  IconSet
-	colors ColorSet
+	icons  Set
+	colors Set
 }
 
 func NewMqttUpdater(cfg MqttConfig) (*MqttUpdater, error) {
@@ -84,8 +80,8 @@ func NewMqttUpdater(cfg MqttConfig) (*MqttUpdater, error) {
 func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 	payload := Payload{
 		Text:  u.eventText(event),
-		Color: u.eventTextColor(event),
-		Icon:  u.eventIcon(event),
+		Color: u.colors.Choose(event),
+		Icon:  u.icons.Choose(event),
 	}
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
@@ -112,25 +108,14 @@ func (u *MqttUpdater) eventText(event ticker.Event) string {
 	}
 }
 
-func (u *MqttUpdater) eventTextColor(event ticker.Event) []int {
+func (s *Set) Choose(event ticker.Event) string {
 	switch {
 	case event.IsZero():
-		return u.colors.Zero
+		return s.Zero
 	case event.Upcoming:
-		return u.colors.Upcoming
+		return s.Upcoming
 	default:
-		return u.colors.OnAir
-	}
-}
-
-func (u *MqttUpdater) eventIcon(event ticker.Event) string {
-	switch {
-	case event.IsZero():
-		return u.icons.Zero
-	case event.Upcoming:
-		return u.icons.Upcoming
-	default:
-		return u.icons.OnAir
+		return s.OnAir
 	}
 }
 

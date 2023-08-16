@@ -9,10 +9,10 @@ type Payload struct {
 	TopText bool `json:"topText,omitempty"`
 	//Sets an offset for the x position of a starting text
 	TextOffset int `json:"textOffset,omitempty"`
-	// The text, bar or line color
-	Color []int `json:"color,omitempty"`
-	// Sets a background color
-	Background []int `json:"background,omitempty"`
+	// The text, bar or line color (#hex)
+	Color string `json:"color,omitempty"`
+	// Sets a background color (#hex)
+	Background string `json:"background,omitempty"`
 	// Fades each letter in the text differently through the entire RGB spectrum
 	Rainbow bool `json:"rainbow,omitempty"`
 	// The icon ID or filename (without extension) to display on the app

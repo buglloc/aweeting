@@ -3,9 +3,11 @@ package ticker
 import (
 	"context"
 	"fmt"
-	"github.com/buglloc/aweeting/internal/calendar"
-	"github.com/rs/zerolog/log"
 	"time"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/buglloc/aweeting/internal/calendar"
 )
 
 type ConstTicker struct {

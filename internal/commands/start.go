@@ -3,15 +3,17 @@ package commands
 import (
 	"context"
 	"fmt"
-	"github.com/buglloc/aweeting/internal/awtrix"
-	"github.com/buglloc/aweeting/internal/calendar"
-	"github.com/buglloc/aweeting/internal/ticker"
-	"github.com/rs/zerolog/log"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+
+	"github.com/buglloc/aweeting/internal/awtrix"
+	"github.com/buglloc/aweeting/internal/calendar"
+	"github.com/buglloc/aweeting/internal/ticker"
 )
 
 var startArgs struct {
@@ -36,13 +38,13 @@ var startCmd = &cobra.Command{
 			Topic:    startArgs.Topic,
 			Username: startArgs.Username,
 			Password: startArgs.Password,
-			Icons: awtrix.IconSet{
+			Icons: awtrix.Set{
 				Zero:     "11899",
 				Upcoming: "11899",
 				OnAir:    "11899",
 			},
-			Colors: awtrix.ColorSet{
-				OnAir: []int{255, 104, 0},
+			Colors: awtrix.Set{
+				OnAir: "#e60000",
 			},
 		})
 		if err != nil {

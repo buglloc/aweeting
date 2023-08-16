@@ -2,9 +2,10 @@ package ticker
 
 import (
 	"fmt"
-	"github.com/buglloc/aweeting/internal/calendar"
 	"sync"
 	"time"
+
+	"github.com/buglloc/aweeting/internal/calendar"
 )
 
 type Intervaler struct {

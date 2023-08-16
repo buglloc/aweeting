@@ -2,8 +2,9 @@ package ticker
 
 import (
 	"context"
-	"github.com/rs/zerolog/log"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 type TimerConfig struct {
