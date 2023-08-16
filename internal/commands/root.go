@@ -28,7 +28,6 @@ func init() {
 
 	rootCmd.AddCommand(
 		eventsCmd,
-		intervalsCmd,
 		startCmd,
 	)
 }

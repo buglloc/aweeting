@@ -17,12 +17,12 @@ var eventsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := calendar.NewICal(rootArgs.Source)
 		if err != nil {
-			return fmt.Errorf("create calendar")
+			return fmt.Errorf("create calendar: %w", err)
 		}
 
-		events, err := c.Events(context.Background())
+		events, err := c.Events(context.Background(), calendar.DefaultLimit)
 		if err != nil {
-			return fmt.Errorf("fetch events")
+			return fmt.Errorf("fetch events: %w", err)
 		}
 
 		for _, e := range events {
