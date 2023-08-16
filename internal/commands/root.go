@@ -1,14 +1,20 @@
 package commands
 
 import (
+	"fmt"
+	"log"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
+
+	"github.com/buglloc/aweeting/internal/config"
 )
 
+var cfg *config.Config
+
 var rootArgs struct {
-	Verbose bool
-	Source  string
+	Configs []string
 }
 
 var rootCmd = &cobra.Command{
@@ -22,12 +28,30 @@ func Execute() error {
 }
 
 func init() {
+	cobra.OnInitialize(
+		initConfig,
+		initLogger,
+	)
+
 	flags := rootCmd.PersistentFlags()
-	flags.BoolVar(&rootArgs.Verbose, "verbose", os.Getenv("AW_VERBOSE") != "", "verbose")
-	flags.StringVar(&rootArgs.Source, "source", os.Getenv("AW_SOURCE"), "source")
+	flags.StringSliceVar(&rootArgs.Configs, "config", nil, "config file")
 
 	rootCmd.AddCommand(
-		eventsCmd,
 		startCmd,
+		eventsCmd,
 	)
+}
+
+func initConfig() {
+	var err error
+	cfg, err = config.LoadConfig(rootArgs.Configs...)
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "unable to load config: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func initLogger() {
+	log.SetOutput(os.Stderr)
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }

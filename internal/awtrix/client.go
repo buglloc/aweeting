@@ -14,29 +14,38 @@ import (
 	"github.com/buglloc/aweeting/internal/ticker"
 )
 
-type Set struct {
-	Zero     string
-	Upcoming string
-	OnAir    string
+const DefaultUpcomingLimit = 8 * time.Hour
+
+var DefaultPayload = Payload{
+	TextCase:    0,
+	Color:       "#ffffff",
+	Icon:        "11899",
+	Repeat:      1,
+	Duration:    5,
+	Stack:       true,
+	ScrollSpeed: 100,
 }
 
-type MqttConfig struct {
-	Upstream string
-	Username string
-	Password string
-	Topic    string
-	Icons    Set
-	Colors   Set
+type UpdaterConfig struct {
+	Upstream        string
+	Username        string
+	Password        string
+	Topic           string
+	UpcomingLimit   time.Duration
+	NonePayload     Payload
+	UpcomingPayload Payload
+	OnAirPayload    Payload
 }
 
 type MqttUpdater struct {
-	mqtt   mqtt.Client
-	topic  string
-	icons  Set
-	colors Set
+	mqtt            mqtt.Client
+	topic           string
+	nonePayload     Payload
+	upcomingPayload Payload
+	onAirPayload    Payload
 }
 
-func NewMqttUpdater(cfg MqttConfig) (*MqttUpdater, error) {
+func NewMqttUpdater(cfg UpdaterConfig) (*MqttUpdater, error) {
 	if cfg.Topic == "" {
 		return nil, errors.New(".Topic is required")
 	}
@@ -70,20 +79,16 @@ func NewMqttUpdater(cfg MqttConfig) (*MqttUpdater, error) {
 	client.Connect()
 
 	return &MqttUpdater{
-		mqtt:   client,
-		topic:  cfg.Topic,
-		icons:  cfg.Icons,
-		colors: cfg.Colors,
+		mqtt:            client,
+		topic:           cfg.Topic,
+		nonePayload:     cfg.NonePayload,
+		upcomingPayload: cfg.UpcomingPayload,
+		onAirPayload:    cfg.OnAirPayload,
 	}, nil
 }
 
 func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
-	payload := Payload{
-		Text:  u.eventText(event),
-		Color: u.colors.Choose(event),
-		Icon:  u.icons.Choose(event),
-	}
-	payloadBytes, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(u.payload(event))
 	if err != nil {
 		return fmt.Errorf("payload marshal: %w", err)
 	}
@@ -97,29 +102,33 @@ func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 	}
 }
 
+func (u *MqttUpdater) payload(event ticker.Event) Payload {
+	var payload Payload
+	switch {
+	case event.IsZero():
+		payload = u.nonePayload
+	case event.Upcoming:
+		payload = u.upcomingPayload
+	default:
+		payload = u.onAirPayload
+	}
+
+	payload.Text = u.eventText(event)
+	return payload
+}
+
 func (u *MqttUpdater) eventText(event ticker.Event) string {
 	switch {
 	case event.IsZero():
 		return " ##:##"
 	case event.Upcoming:
-		return fmt.Sprintf("-%s", formatDuration(event.ToStart))
+		return fmt.Sprintf("-%s", u.formatDuration(event.ToStart))
 	default:
-		return fmt.Sprintf(" %s", formatDuration(event.Left))
+		return fmt.Sprintf(" %s", u.formatDuration(event.Left))
 	}
 }
 
-func (s *Set) Choose(event ticker.Event) string {
-	switch {
-	case event.IsZero():
-		return s.Zero
-	case event.Upcoming:
-		return s.Upcoming
-	default:
-		return s.OnAir
-	}
-}
-
-func formatDuration(d time.Duration) string {
+func (u *MqttUpdater) formatDuration(d time.Duration) string {
 	if d.Minutes() < 60.0 {
 		return fmt.Sprintf("00:%02d", int(d.Minutes()))
 	}

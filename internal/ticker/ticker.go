@@ -6,7 +6,7 @@ import (
 )
 
 type Ticker interface {
-	Start(Handler)
+	Start(Handler) error
 	Stop(context.Context)
 }
 

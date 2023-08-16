@@ -15,7 +15,12 @@ var eventsCmd = &cobra.Command{
 	SilenceUsage: true,
 	Short:        "Parse&&print upcoming events",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := calendar.NewICal(rootArgs.Source)
+		runtime, err := cfg.NewRuntime()
+		if err != nil {
+			return fmt.Errorf("create runtime: %w", err)
+		}
+
+		c, err := runtime.NewCalendar()
 		if err != nil {
 			return fmt.Errorf("create calendar: %w", err)
 		}

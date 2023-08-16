@@ -16,6 +16,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const DefaultTimezone = "Local"
+
 type ICal struct {
 	source string
 	loc    *time.Location
