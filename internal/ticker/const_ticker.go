@@ -16,9 +16,7 @@ type ConstTicker struct {
 	interval      *Intervaler
 	previewLimit  time.Duration
 	fetchInterval time.Duration
-	fetchTimer    *time.Timer
 	tickInterval  time.Duration
-	updateTimer   *time.Timer
 }
 
 func NewConstTicker(cal calendar.Calendar) *ConstTicker {
