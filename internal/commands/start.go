@@ -44,7 +44,9 @@ var startCmd = &cobra.Command{
 				OnAir:    "11899",
 			},
 			Colors: awtrix.Set{
-				OnAir: "#e60000",
+				Zero:     "#ffffff",
+				Upcoming: "#ffffff",
+				OnAir:    "#e60000",
 			},
 		})
 		if err != nil {
