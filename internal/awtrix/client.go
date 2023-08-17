@@ -31,6 +31,7 @@ type UpdaterConfig struct {
 	Username        string
 	Password        string
 	Topic           string
+	SelfDestruct    bool
 	UpcomingLimit   time.Duration
 	NonePayload     Payload
 	UpcomingPayload Payload
@@ -82,7 +83,7 @@ func NewMqttUpdater(cfg UpdaterConfig) (*MqttUpdater, error) {
 }
 
 func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
-	payloadBytes, err := json.Marshal(u.payload(event))
+	payloadBytes, err := u.payloadBytes(event)
 	if err != nil {
 		return fmt.Errorf("payload marshal: %w", err)
 	}
@@ -96,10 +97,14 @@ func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 	}
 }
 
-func (u *MqttUpdater) payload(event ticker.Event) Payload {
+func (u *MqttUpdater) payloadBytes(event ticker.Event) ([]byte, error) {
 	var payload Payload
 	switch {
 	case u.isNoneEvent(event):
+		if u.cfg.SelfDestruct {
+			return nil, nil
+		}
+
 		payload = u.cfg.NonePayload
 	case event.Upcoming:
 		payload = u.cfg.UpcomingPayload
@@ -108,7 +113,7 @@ func (u *MqttUpdater) payload(event ticker.Event) Payload {
 	}
 
 	payload.Text = u.eventText(event)
-	return payload
+	return json.Marshal(payload)
 }
 
 func (u *MqttUpdater) eventText(event ticker.Event) string {

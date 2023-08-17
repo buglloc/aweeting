@@ -16,6 +16,7 @@ type Mqtt struct {
 }
 
 type Awtrix struct {
+	SelfDestruct  bool              `koanf:"selfDestruct"`
 	UpcomingLimit time.Duration     `koanf:"upcomingLimit"`
 	Messages      AwtrixMessagesSet `koanf:"messages"`
 }
@@ -91,6 +92,7 @@ func (r *Runtime) NewAwtrixUpdater() (*awtrix.MqttUpdater, error) {
 		Username:        r.cfg.Mqtt.Username,
 		Password:        r.cfg.Mqtt.Password,
 		Topic:           r.cfg.Mqtt.Topic,
+		SelfDestruct:    r.cfg.Awtrix.SelfDestruct,
 		UpcomingLimit:   r.cfg.Awtrix.UpcomingLimit,
 		NonePayload:     awtrix.Payload(r.cfg.Awtrix.Messages.None),
 		UpcomingPayload: awtrix.Payload(r.cfg.Awtrix.Messages.Upcoming),
