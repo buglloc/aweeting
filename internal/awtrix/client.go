@@ -38,11 +38,8 @@ type UpdaterConfig struct {
 }
 
 type MqttUpdater struct {
-	mqtt            mqtt.Client
-	topic           string
-	nonePayload     Payload
-	upcomingPayload Payload
-	onAirPayload    Payload
+	mqtt mqtt.Client
+	cfg  UpdaterConfig
 }
 
 func NewMqttUpdater(cfg UpdaterConfig) (*MqttUpdater, error) {
@@ -79,11 +76,8 @@ func NewMqttUpdater(cfg UpdaterConfig) (*MqttUpdater, error) {
 	client.Connect()
 
 	return &MqttUpdater{
-		mqtt:            client,
-		topic:           cfg.Topic,
-		nonePayload:     cfg.NonePayload,
-		upcomingPayload: cfg.UpcomingPayload,
-		onAirPayload:    cfg.OnAirPayload,
+		mqtt: client,
+		cfg:  cfg,
 	}, nil
 }
 
@@ -93,7 +87,7 @@ func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 		return fmt.Errorf("payload marshal: %w", err)
 	}
 
-	token := u.mqtt.Publish(u.topic, 0, false, payloadBytes)
+	token := u.mqtt.Publish(u.cfg.Topic, 0, false, payloadBytes)
 	select {
 	case <-token.Done():
 		return token.Error()
@@ -105,12 +99,12 @@ func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 func (u *MqttUpdater) payload(event ticker.Event) Payload {
 	var payload Payload
 	switch {
-	case event.IsZero():
-		payload = u.nonePayload
+	case event.IsZero() || event.StartsAt.Sub(time.Now()) > u.cfg.UpcomingLimit:
+		payload = u.cfg.NonePayload
 	case event.Upcoming:
-		payload = u.upcomingPayload
+		payload = u.cfg.UpcomingPayload
 	default:
-		payload = u.onAirPayload
+		payload = u.cfg.OnAirPayload
 	}
 
 	payload.Text = u.eventText(event)
