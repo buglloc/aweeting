@@ -1,7 +1,7 @@
 verbose: false
 calendar:
-  sourceUrl: "https://calendar.yandex.ru/export/ics.xml?private_token=XXXXX&tz_id=Europe/Moscow"
-  timezone: Local
+  sourceUrl: "https://calendar.yandex.ru/export/ics.xml?private_token=XXXXX&tz_id=Asia/Bangkok"
+  timezone: Asia/Bangkok
 ticker:
   jitter: 20m
   previewLimit: 24h
@@ -13,11 +13,12 @@ mqtt:
   password: "aweeting-password"
   topic: "awtrix/custom/meetings"
 awtrix:
-  upcomingLimit: 8h
+  selfDestruct: true
+  upcomingLimit: 4h
   messages:
     none:
       color: "#ffffff"
-      icon: "11899"
+      icon: "2899"
     upcoming:
       color: "#ffffff"
       icon: "11899"
