@@ -99,7 +99,7 @@ func (u *MqttUpdater) Update(ctx context.Context, event ticker.Event) error {
 func (u *MqttUpdater) payload(event ticker.Event) Payload {
 	var payload Payload
 	switch {
-	case event.IsZero() || event.StartsAt.Sub(time.Now()) > u.cfg.UpcomingLimit:
+	case u.isNoneEvent(event):
 		payload = u.cfg.NonePayload
 	case event.Upcoming:
 		payload = u.cfg.UpcomingPayload
@@ -113,7 +113,7 @@ func (u *MqttUpdater) payload(event ticker.Event) Payload {
 
 func (u *MqttUpdater) eventText(event ticker.Event) string {
 	switch {
-	case event.IsZero():
+	case u.isNoneEvent(event):
 		return " ##:##"
 	case event.Upcoming:
 		return fmt.Sprintf("-%s", u.formatDuration(event.ToStart))
@@ -133,4 +133,7 @@ func (u *MqttUpdater) formatDuration(d time.Duration) string {
 	}
 
 	return "##:##"
+}
+func (u *MqttUpdater) isNoneEvent(event ticker.Event) bool {
+	return event.IsZero() || event.StartsAt.Sub(time.Now()) > u.cfg.UpcomingLimit
 }
