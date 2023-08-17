@@ -135,5 +135,5 @@ func (u *MqttUpdater) formatDuration(d time.Duration) string {
 	return "##:##"
 }
 func (u *MqttUpdater) isNoneEvent(event ticker.Event) bool {
-	return event.IsZero() || event.StartsAt.Sub(time.Now()) > u.cfg.UpcomingLimit
+	return event.IsZero() || time.Until(event.StartsAt) > u.cfg.UpcomingLimit
 }
