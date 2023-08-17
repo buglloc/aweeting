@@ -1,0 +1,26 @@
+verbose: false
+calendar:
+  sourceUrl: "https://calendar.yandex.ru/export/ics.xml?private_token=XXXXX&tz_id=Europe/Moscow"
+  timezone: Local
+ticker:
+  jitter: 20m
+  previewLimit: 24h
+  fetchInterval: 1h
+  tickInterval: 5m
+mqtt:
+  upstream: "tcp://mqtt.iot.buglloc.cc:1883"
+  username: "aweeting"
+  password: "aweeting-password"
+  topic: "awtrix/custom/meetings"
+awtrix:
+  upcomingLimit: 8h
+  messages:
+    none:
+      color: "#ffffff"
+      icon: "11899"
+    upcoming:
+      color: "#ffffff"
+      icon: "11899"
+    onAir:
+      color: "#e60000"
+      icon: "24092"

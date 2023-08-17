@@ -1,4 +1,6 @@
-Source: https://raw.githubusercontent.com/Blueforcer/awtrix-light/main/docs/api.md
+Source:
+ - https://raw.githubusercontent.com/Blueforcer/awtrix-light/main/docs/api.md
+ - https://blueforcer.github.io/awtrix-light/#/api?id=json-properties
 
 | Key | Type | Description | Default | Custom App | Notification |
 | --- | ---- | ----------- | ------- | ------- |------- |

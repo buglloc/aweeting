@@ -10,6 +10,22 @@ import (
 	"github.com/buglloc/aweeting/internal/calendar"
 )
 
+const (
+	DefaultJitter        = 20 * time.Minute
+	DefaultPreviewLimit  = 24 * time.Hour
+	DefaultFetchInterval = 1 * time.Hour
+	DefaultTickInterval  = 5 * time.Minute
+)
+
+var _ Ticker = (*ConstTicker)(nil)
+
+type ConstTickerConfig struct {
+	Jitter        time.Duration
+	PreviewLimit  time.Duration
+	FetchInterval time.Duration
+	TickInterval  time.Duration
+}
+
 type ConstTicker struct {
 	cal           calendar.Calendar
 	ctx           context.Context
@@ -21,18 +37,18 @@ type ConstTicker struct {
 	tickInterval  time.Duration
 }
 
-func NewConstTicker(cal calendar.Calendar) *ConstTicker {
+func NewConstTicker(cal calendar.Calendar, cfg ConstTickerConfig) (*ConstTicker, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &ConstTicker{
 		cal:           cal,
 		ctx:           ctx,
 		cancelCtx:     cancel,
 		done:          make(chan struct{}),
-		interval:      NewIntervaler(20 * time.Minute),
-		previewLimit:  24 * time.Hour,
-		fetchInterval: 1 * time.Hour,
-		tickInterval:  5 * time.Minute,
-	}
+		interval:      NewIntervaler(cfg.Jitter),
+		previewLimit:  cfg.PreviewLimit,
+		fetchInterval: cfg.FetchInterval,
+		tickInterval:  cfg.TickInterval,
+	}, nil
 }
 
 func (t *ConstTicker) Start(handler Handler) error {
