@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/apognu/gocal"
+	ics "github.com/arran4/golang-ical"
 	"github.com/buglloc/certifi"
 	"github.com/go-resty/resty/v2"
 	"github.com/rs/zerolog/log"
@@ -68,35 +68,50 @@ func (c *ICal) Events(ctx context.Context, limit time.Duration) ([]Event, error)
 		_ = rsp.RawBody().Close()
 	}()
 
-	ical := gocal.NewParser(rsp.RawBody())
-	start := time.Now()
-	ical.Start = &start
-	end := start.Add(limit)
-	ical.End = &end
-	ical.Strict = gocal.StrictParams{
-		Mode: gocal.StrictModeFailAttribute,
+	parsed, err := ics.ParseCalendar(rsp.RawBody())
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse calendar: %w", err)
 	}
 
-	if err := ical.Parse(); err != nil {
-		return nil, fmt.Errorf("invalid ical events: %w", err)
-	}
+	minEnd := time.Now()
+	maxEnd := minEnd.Add(limit)
 
-	events := make([]Event, 0, len(ical.Events))
-	for _, e := range ical.Events {
-		if e.Start == nil || e.End == nil {
-			log.Warn().Any("event", e).Msg("skip event w/o boundaries")
+	var events []Event
+	for _, e := range parsed.Events() {
+		eventID := e.Id()
+		endAt, err := e.GetEndAt()
+		if err != nil {
+			log.Warn().Str("event_id", eventID).Err(err).Msg("skip event with invalid End datetime")
+			continue
+		}
+		if endAt.Before(minEnd) {
 			continue
 		}
 
-		if e.Summary == "" {
-			e.Summary = "n/a"
+		startAt, err := e.GetStartAt()
+		if err != nil {
+			log.Warn().Str("event_id", eventID).Err(err).Msg("skip event with invalid Start datetime")
+			continue
+		}
+		if startAt.After(maxEnd) {
+			continue
+		}
+
+		if startAt.After(endAt) {
+			log.Warn().Str("event_id", eventID).Err(err).Msg("skip event with invalid dates: Start after End")
+			continue
+		}
+
+		var summary string
+		if p := e.GetProperty(ics.ComponentPropertySummary); p != nil {
+			summary = p.Value
 		}
 
 		events = append(events, Event{
-			ID:      eventID(e.Summary, e.RawStart.Value, e.RawEnd.Value),
-			Summary: e.Summary,
-			Start:   e.Start.In(c.loc),
-			End:     e.End.In(c.loc),
+			ID:      outEventID(summary, startAt.UTC().String(), endAt.UTC().String()),
+			Summary: summary,
+			Start:   startAt.In(c.loc),
+			End:     endAt.In(c.loc),
 		})
 	}
 
@@ -119,7 +134,7 @@ func (c *ICal) Events(ctx context.Context, limit time.Duration) ([]Event, error)
 	return events[:n], nil
 }
 
-func eventID(summary, eventStart, eventEnd string) int {
+func outEventID(summary, eventStart, eventEnd string) int {
 	h := fnv.New32a()
 	_, _ = h.Write([]byte(eventStart))
 	_, _ = h.Write([]byte(eventEnd))
