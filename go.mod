@@ -3,7 +3,7 @@ module github.com/buglloc/aweeting
 go 1.20
 
 require (
-	github.com/apognu/gocal v0.9.0
+	github.com/arran4/golang-ical v0.1.0
 	github.com/buglloc/certifi v0.9.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/go-resty/resty/v2 v2.7.0
@@ -18,13 +18,11 @@ require (
 )
 
 require (
-	github.com/ChannelMeter/iso8601duration v0.0.0-20150204201828-8da3af7a2a61 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
