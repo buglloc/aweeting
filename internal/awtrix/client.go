@@ -14,7 +14,10 @@ import (
 	"github.com/buglloc/aweeting/internal/ticker"
 )
 
-const DefaultUpcomingLimit = 8 * time.Hour
+const (
+	DefaultUpcomingLimit  = 8 * time.Hour
+	MqttConnectionTimeout = 5 * time.Minute
+)
 
 var DefaultPayload = Payload{
 	TextCase:    0,
@@ -74,7 +77,9 @@ func NewMqttUpdater(cfg UpdaterConfig) (*MqttUpdater, error) {
 	}
 
 	client := mqtt.NewClient(opts)
-	client.Connect()
+	if token := client.Connect(); token.WaitTimeout(MqttConnectionTimeout) && token.Error() != nil {
+		return nil, fmt.Errorf("MQTT connection failed: %w", token.Error())
+	}
 
 	return &MqttUpdater{
 		mqtt: client,
