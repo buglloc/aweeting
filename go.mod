@@ -14,6 +14,7 @@ require (
 	github.com/rs/zerolog v1.30.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
+	github.com/teambition/rrule-go v1.8.2
 	go.uber.org/automaxprocs v1.5.3
 )
 
