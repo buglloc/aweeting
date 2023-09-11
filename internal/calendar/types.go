@@ -22,3 +22,8 @@ func (e *Event) IsSame(other Event) bool {
 func (e *Event) IsZero() bool {
 	return e.ID == 0
 }
+
+type TimeBound struct {
+	Start time.Time
+	End   time.Time
+}
