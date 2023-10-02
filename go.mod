@@ -6,7 +6,7 @@ require (
 	github.com/arran4/golang-ical v0.1.0
 	github.com/buglloc/certifi v0.9.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
-	github.com/go-resty/resty/v2 v2.8.0
+	github.com/go-resty/resty/v2 v2.9.1
 	github.com/knadh/koanf/parsers/yaml v0.1.0
 	github.com/knadh/koanf/providers/env v0.1.0
 	github.com/knadh/koanf/providers/file v0.1.0
