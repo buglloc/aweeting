@@ -43,7 +43,10 @@ func (t *Timer) Start(ctx context.Context) {
 	t.timer = time.AfterFunc(tick(), func() {
 		now := time.Now()
 		log.Ctx(ctx).Info().Msg("task started")
-		defer log.Ctx(ctx).Info().Dur("elapsed", time.Since(now)).Msg("task finished")
+		defer func() {
+			// arrrrr
+			log.Ctx(ctx).Info().Dur("elapsed", time.Since(now)).Msg("task finished")
+		}()
 
 		if ctx.Err() != nil {
 			log.Ctx(ctx).Info().Msg("task stopped")
