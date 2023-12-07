@@ -1,5 +1,5 @@
-github.com/arran4/golang-ical v0.2.1 h1:7gSJYzMu4milwosbHNxi3mQZHiTWny9A7B8XH4rmx+w=
-github.com/arran4/golang-ical v0.2.1/go.mod h1:RqMuPGmwRRwjkb07hmm+JBqcWa1vF1LvVmPtSZN2OhQ=
+github.com/arran4/golang-ical v0.2.2 h1:rSoNV8A2bKjuiuyZrzzavzAHG82xgudMy/3zpquKi4U=
+github.com/arran4/golang-ical v0.2.2/go.mod h1:RqMuPGmwRRwjkb07hmm+JBqcWa1vF1LvVmPtSZN2OhQ=
 github.com/buglloc/certifi v0.9.2 h1:5GCf8WfzhwdbtfBIvjhG68jteTzcZlJCANNgAL9ntG8=
 github.com/buglloc/certifi v0.9.2/go.mod h1:gfBmljk3gl0dTYtpx18dLMjx8fXutictjX9RWyBcQT0=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
