@@ -3,7 +3,7 @@ module github.com/buglloc/aweeting
 go 1.20
 
 require (
-	github.com/arran4/golang-ical v0.3.1
+	github.com/arran4/golang-ical v0.3.2
 	github.com/buglloc/certifi v0.9.3
 	github.com/eclipse/paho.mqtt.golang v1.5.0
 	github.com/go-resty/resty/v2 v2.16.5
