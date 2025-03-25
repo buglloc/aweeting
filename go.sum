@@ -1,7 +1,7 @@
 github.com/arran4/golang-ical v0.3.2 h1:MGNjcXJFSuCXmYX/RpZhR2HDCYoFuK8vTPFLEdFC3JY=
 github.com/arran4/golang-ical v0.3.2/go.mod h1:xblDGxxIUMWwFZk9dlECUlc1iXNV65LJZOTHLVwu8bo=
-github.com/buglloc/certifi v0.9.3 h1:AeKLJ93im8LPm8cI90e9HZmMh7rUSET9h/StrbpSAHs=
-github.com/buglloc/certifi v0.9.3/go.mod h1:gfBmljk3gl0dTYtpx18dLMjx8fXutictjX9RWyBcQT0=
+github.com/buglloc/certifi v0.9.4 h1:d7ETUu3fY5uqZW2Sr+TNxfgOoju3s66SUZ9nkaPCa8E=
+github.com/buglloc/certifi v0.9.4/go.mod h1:gfBmljk3gl0dTYtpx18dLMjx8fXutictjX9RWyBcQT0=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
